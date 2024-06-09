@@ -1,72 +1,79 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import './Form.css'
+import React, {useCallback, useEffect, useState} from 'react';
+import './Form.css';
 import { useTelegram } from '../hooks/useTelegram';
 
+
 const Form = () => {
-  const [data, setData] = useState({
-    country: '',
-    street: '',
-    subject: ''
-  });
-  const { tg } = useTelegram();
+    const [country, setCountry] = useState('');
+    const [street, setStreet] = useState('');
+    const [subject, setSubject] = useState('physical');
+    const {tg} = useTelegram();
 
-  const onSendData = useCallback(() => {
-    const dataToSend = {
-      country: data.country,
-      street: data.street,
-      subject: data.subject
-    };
+    const onSendData = useCallback(() => {
+        const data = {
+            country,
+            street,
+            subject
+        }
+        tg.sendData(JSON.stringify(data));
+    }, [country, street, subject])
 
-    tg.sendData(JSON.stringify(dataToSend));
-  }, [data]);
+    useEffect(() => {
+        tg.onEvent('mainButtonClicked', onSendData)
+        return () => {
+            tg.offEvent('mainButtonClicked', onSendData)
+        }
+    }, [onSendData])
 
-  useEffect(() => {
-    if (!tg) return; // ensure tg is initialized
+    useEffect(() => {
+        tg.MainButton.setParams({
+            text: 'Отправить данные'
+        })
+    }, [])
 
-    tg.onEvent('mainButtonClicked', onSendData);
+    useEffect(() => {
+        if(!street || !country) {
+            tg.MainButton.hide();
+        } else {
+            tg.MainButton.show();
+        }
+    }, [country, street])
 
-    return () => {
-      tg.offEvent('mainButtonClicked', onSendData);
-    };
-  }, [onSendData, tg]);
-
-  useEffect(() => {
-    if (!tg) return; // ensure tg is initialized
-
-    tg.MainButton.setParams({
-      text: 'Send Data'
-    });
-  }, [tg]);
-
-  useEffect(() => {
-    if (!tg) return; // ensure tg is initialized
-
-    if (!data.street ||!data.country) {
-      tg.MainButton.hide();
-    } else {
-      tg.MainButton.show();
+    const onChangeCountry = (e) => {
+        setCountry(e.target.value)
     }
-  }, [tg, data.country, data.street]);
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
+    const onChangeStreet = (e) => {
+        setStreet(e.target.value)
+    }
 
-    setData((prevData) => ({...prevData, [name]: value }));
+    const onChangeSubject = (e) => {
+        setSubject(e.target.value)
+    }
 
-    console.log(data);
-  };
-
-  return (
-    <div className={'form'}>
-      <h3>Type your data</h3>
-      <input type="text" name='country' onChange={onChange} className='input' placeholder='Country'/>
-      <input type="text" name='street' onChange={onChange} className='input' placeholder='Street' />
-      <select className='select' name='subject' onChange={onChange}>
-        <option value={'legal'}>Юр.лицо</option>
-        <option value={'physical'}>Физ.лицо</option>
-      </select>
-    </div>
-  );
+    return (
+        <div className={"form"}>
+            <h3>Введите ваши данные</h3>
+            <input
+                className={'input'}
+                type="text"
+                placeholder={'Страна'}
+                value={country}
+                onChange={onChangeCountry}
+            />
+            <input
+                className={'input'}
+                type="text"
+                placeholder={'Улица'}
+                value={street}
+                onChange={onChangeStreet}
+            />
+            <select value={subject} onChange={onChangeSubject} className={'select'}>
+                <option value={'physical'}>Физ. лицо</option>
+                <option value={'legal'}>Юр. лицо</option>
+            </select>
+        </div>
+    );
 };
 
-export default Form
+export default Form;
