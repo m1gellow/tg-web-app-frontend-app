@@ -10,6 +10,12 @@ const Form = () => {
       get: ''
     })
 
+    useEffect(() => {
+      tg.MainButton.setParams({
+        text: 'Trade'
+      })
+    }, [])
+
 
   useEffect(() => {
     if(!count.pay || !count.get){
