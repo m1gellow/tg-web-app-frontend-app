@@ -1,17 +1,27 @@
-.form {
+.form{
+    padding: 40px;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    padding: 20px;
-}
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 
-.input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 15px;
-}
+    .input{
+        border: 1px solid rgb(0, 119, 255);
+        padding: 20px 20px 10px 20px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 15px;
+    }
 
-.select {
-    padding: 10px;
-    margin-top: 15px;
+    .button{
+        border: none;
+        background-color: rgb(0, 119, 255);
+        padding: 10px 20px;
+        border-radius: 12px;
+        color: #f1f1f1;
+
+    }
+
+    
 }
